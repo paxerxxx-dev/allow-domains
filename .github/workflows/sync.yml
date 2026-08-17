@@ -1,0 +1,45 @@
+name: Full Sync and Append Custom Domains
+
+on:
+  schedule:
+    - cron: '0 4 * * *' # Запуск каждый день в 04:00 утра
+  workflow_dispatch: # Позволяет запустить синхронизацию вручную кнопкой
+
+jobs:
+  sync_and_append:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your fork
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Скачиваем всю историю, чтобы Git мог правильно объединить репозитории
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'Github Actions Bot'
+          git config --global user.email 'actions@github.com'
+
+      - name: Sync all files from original repo
+        run: |
+          # Добавляем оригинальный репозиторий как источник (upstream)
+          git remote add upstream https://github.com/itdoginfo/allow-domains.git
+          git fetch upstream
+          
+          # Переключаемся на вашу ветку main и вливаем изменения из оригинала.
+          # Стратегия -Xours автоматически разрешает конфликты в пользу оригинала,
+          # что позволит нам на следующем шаге начисто переписать файл.
+          git checkout main
+          git merge upstream/main -X ours --no-edit
+
+      - name: Mikrotik lists
+        run: python3 conf_mikrotik.py
+
+      - name: Openwrt lists
+        run: python3 conf_openwrt.py
+
+      - name: Commit and Push changes
+        run: |
+          git add .
+          # Отправляем все обновленные файлы и ваши изменения назад в ваш форк
+          git diff-index --quiet HEAD || git commit -m "Синхронизация репозитория и добавление доменов"
+          git push origin main
