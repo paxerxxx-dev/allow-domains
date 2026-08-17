@@ -8,6 +8,9 @@ on:
 jobs:
   sync_and_append:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write       # Allows pushing commits/tags
+      pull-requests: write  # Allows creating PRs (if needed)
     steps:
       - name: Checkout your fork
         uses: actions/checkout@v4
