@@ -16,4 +16,3 @@
 /ip dns static add name=kpdl.link type=FWD address-list=allow-domains match-subdomain=yes forward-to=localhost comment="kinopub"
 /ip dns static add name=szbboys.com type=FWD address-list=allow-domains match-subdomain=yes forward-to=localhost comment="kinopub"
 /ip dns static add name=kino.watch type=FWD address-list=allow-domains match-subdomain=yes forward-to=localhost comment="kinopub"
-/ip dns static add name=test.test type=FWD address-list=allow-domains match-subdomain=yes forward-to=localhost comment="test"
